@@ -2,8 +2,7 @@ package env
 
 import (
 	"os"
-
-	godotenv "github.com/joho/godotenv"
+	// godotenv "github.com/joho/godotenv"
 )
 
 type Env struct {
@@ -32,31 +31,33 @@ func GetEnv() *Env {
 	return &config
 }
 
-func readEnvFile(filePath string) (map[string]string, error) {
-	envMap, err := godotenv.Read(filePath)
-	if err != nil {
-		return nil, err
-	}
-	return envMap, nil
+func GetConfig() *Env {
+	return GetEnv()
 }
 
-func envToConfig(envMap map[string]string) *Env {
-	var config Env
-	if user, ok := envMap[User]; ok {
-		config.User = user
-	}
-	if pass, ok := envMap[Pass]; ok {
-		config.Pass = pass
-	}
-	if apiKey, ok := envMap[APIKey]; ok {
-		config.APIKey = apiKey
-	}
-	return &config
-}
-func GetConfig() *Env {
-	envMap, err := readEnvFile(".env")
-	if err != nil {
-		return GetEnv()
-	}
-	return envToConfig(envMap)
-}
+// func readEnvFile(filePath string) map[string]string {
+// 	envMap, err := godotenv.Read(filePath)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	return envMap
+// }
+
+// func envToConfig(envMap map[string]string) *Env {
+// 	var config Env
+// 	if user, ok := envMap[User]; ok {
+// 		config.User = user
+// 	}
+// 	if pass, ok := envMap[Pass]; ok {
+// 		config.Pass = pass
+// 	}
+// 	if apiKey, ok := envMap[APIKey]; ok {
+// 		config.APIKey = apiKey
+// 	}
+// 	return &config
+// }
+
+// func GetConfig() *Env {
+// 	envMap := readEnvFile(".env")
+// 	return envToConfig(envMap)
+// }
