@@ -1,34 +1,38 @@
 package main
 
 import (
-	_ "github.com/laurel-public-schools/lps-api/docs"
-	"github.com/laurel-public-schools/lps-api/handler"
-	"github.com/laurel-public-schools/lps-api/router"
-	echoSwagger "github.com/swaggo/echo-swagger"
+	"fmt"
+	"github.com/MarceloPetrucio/go-scalar-api-reference"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/laurel-public-schools/lps-api/routes"
+	"net/http"
 )
 
-// @title LPS API
-// @version 1.0
-// @description This is the API for the Laurel Public Schools
-
-// @host localhost:6969
-// @BasePath /api
-
-// @schemes http https
-// @produce application/json
-// @consumes application/json
-
-// @securityDefinitions.api_key ApiKey
-// @in header
-// @name Authorization
-
 func main() {
-	r := router.New()
-	r.GET("/swagger/*", echoSwagger.WrapHandler)
+	r := chi.NewRouter()
 
-	v1 := r.Group("/api")
+	r.Use(middleware.RequestID)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.RealIP)
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("🏳️‍🌈🏳️‍🌈🏳️‍🌈"))
+	})
+	r.Get("/docs", func(w http.ResponseWriter, r *http.Request) {
+		htmlContent, err := scalar.ApiReferenceHTML(&scalar.Options{
+			SpecURL: "./docs/swagger.json",
+			CustomOptions: scalar.CustomOptions{
+				PageTitle: "LPS Api",
+			},
+			DarkMode: true,
+		})
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
+		fmt.Fprintln(w, htmlContent)
+	})
 
-	h := handler.NewHandler()
-	h.Register(v1)
-	r.Logger.Fatal(r.Start(":6969"))
+	r.Mount("/email", routes.EmailRequest{}.Routes())
+	http.ListenAndServe(":6969", r)
 }

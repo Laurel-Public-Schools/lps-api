@@ -1,16 +1,15 @@
-package handler
+package routes
 
 import (
 	"encoding/json"
-	// "errors"
+	"fmt"
 	"net/http"
 	"net/mail"
 	"net/smtp"
 	"strings"
 
-	"github.com/labstack/echo/v4"
+	"github.com/go-chi/chi/v5"
 	"github.com/laurel-public-schools/lps-api/env"
-	"github.com/laurel-public-schools/lps-api/utils"
 )
 
 type EmailRequest struct {
@@ -21,18 +20,15 @@ type EmailRequest struct {
 	HTML    string
 }
 
-// GetEmail godoc
-// @Summary Send an email
-// @Description Send an email via post request
-// @ID send-email
-// @Tags email
-// @Accept json
-// @Produce json
-// @Success 200
-// @Failure 400 {object} utils.Error
-// @Failure 500 {object} utils.Error
-// @Router /email [post]
-func (h *Handler) SendEmail(c echo.Context) error {
+type EmailRoute struct{}
+
+func (rs EmailRequest) Routes() chi.Router {
+	r := chi.NewRouter()
+	r.Post("/", rs.SendEmail)
+	return r
+}
+
+func (rs EmailRequest) SendEmail(w http.ResponseWriter, r *http.Request) {
 	var e EmailRequest
 	var (
 		config = env.GetConfig()
@@ -40,39 +36,33 @@ func (h *Handler) SendEmail(c echo.Context) error {
 
 	auth := smtp.PlainAuth("", config.User, config.Pass, "smtp.gmail.com")
 
-	bod := c.Request().Body
-
-	err := json.NewDecoder(bod).Decode(&e)
-
+	err := json.NewDecoder(r.Body).Decode(&e)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, utils.NewError(err))
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	// if e.Key != config.APIKey {
-	// 	return c.JSON(http.StatusBadRequest, utils.NewError(errors.New("invalid api key")))
-	// }
+	Key := e.Key
+	if Key != config.APIKey {
+		http.Error(w, "Invalid API Key", http.StatusUnauthorized)
+		return
+	}
 
 	from := mail.Address{Name: e.From, Address: config.User}
-
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 
-	subject := "Subject: " + e.Subject + "\n"
-
+	subject := "Subject: " + e.Subject + "!\n"
 	header := "From: " + from.Name + "<" + from.Address + ">\n"
-
 	msg := []byte(header + subject + mime + "\n" + e.HTML)
-
 	recipients := strings.Split(e.To, ", ")
-
 	for i, recipient := range recipients {
 		recipients[i] = strings.TrimSpace(recipient)
 	}
 
 	errs := smtp.SendMail("smtp.gmail.com:587", auth, config.User, recipients, msg)
-
 	if errs != nil {
-		return c.JSON(http.StatusInternalServerError, utils.NewError(errs))
+		http.Error(w, errs.Error(), http.StatusInternalServerError)
+		fmt.Println(errs)
+		return
 	}
-
-	return c.JSON(http.StatusOK, "Email sent")
 }
