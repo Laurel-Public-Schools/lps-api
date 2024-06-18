@@ -42,12 +42,6 @@ func (rs EmailRequest) SendEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Key := e.Key
-	if Key != config.APIKey {
-		http.Error(w, "Invalid API Key", http.StatusUnauthorized)
-		return
-	}
-
 	from := mail.Address{Name: e.From, Address: config.User}
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 
