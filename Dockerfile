@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine3.20 AS build
+FROM golang:1.22.3-alpine3.20 AS build
 WORKDIR /app
 COPY . .
 RUN go build -o main .
