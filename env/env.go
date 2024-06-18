@@ -1,6 +1,8 @@
 package env
 
 import (
+	"os"
+
 	godotenv "github.com/joho/godotenv"
 )
 
@@ -16,30 +18,26 @@ const (
 	APIKey = "API_KEY"
 )
 
-// func GetEnv() *Env {
-// 	var config Env
-// 	if val, ok := os.LookupEnv(User); ok {
-// 		config.User = val
-// 	}
-// 	if val, ok := os.LookupEnv(Pass); ok {
-// 		config.Pass = val
-// 	}
-// 	if val, ok := os.LookupEnv(APIKey); ok {
-// 		config.APIKey = val
-// 	}
-// 	return &config
-// }
+func GetEnv() *Env {
+	var config Env
+	if val, ok := os.LookupEnv(User); ok {
+		config.User = val
+	}
+	if val, ok := os.LookupEnv(Pass); ok {
+		config.Pass = val
+	}
+	if val, ok := os.LookupEnv(APIKey); ok {
+		config.APIKey = val
+	}
+	return &config
+}
 
-// func GetConfig() *Env {
-// 	return GetEnv()
-// }
-
-func readEnvFile(filePath string) map[string]string {
+func readEnvFile(filePath string) (map[string]string, error) {
 	envMap, err := godotenv.Read(filePath)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return envMap
+	return envMap, nil
 }
 
 func envToConfig(envMap map[string]string) *Env {
@@ -56,6 +54,9 @@ func envToConfig(envMap map[string]string) *Env {
 	return &config
 }
 func GetConfig() *Env {
-	envMap := readEnvFile(".env")
+	envMap, err := readEnvFile(".env")
+	if err != nil {
+		return GetEnv()
+	}
 	return envToConfig(envMap)
 }
