@@ -6,15 +6,25 @@ import (
 )
 
 type Env struct {
-	User   string `json:"user"`
-	Pass   string `json:"pass"`
-	APIKey string `json:"api_key"`
+	User        string `json:"user"`
+	Pass        string `json:"pass"`
+	APIKey      string `json:"api_key"`
+	DSN         string `json:"dsn"`
+	REDIS_HOST1 string `json:"redis_host1"`
+	REDIS_HOST2 string `json:"redis_host2"`
+	REDIS_HOST3 string `json:"redis_host3"`
+	REDIS_PORT  string `json:"redis_port"`
 }
 
 const (
-	User   = "EMAIL_USER"
-	Pass   = "EMAIL_PASSWORD"
-	APIKey = "API_KEY"
+	User        = "EMAIL_USER"
+	Pass        = "EMAIL_PASSWORD"
+	APIKey      = "API_KEY"
+	DSN         = "DSN"
+	REDIS_HOST1 = "REDIS_HOST1"
+	REDIS_HOST2 = "REDIS_HOST2"
+	REDIS_HOST3 = "REDIS_HOST3"
+	REDIS_PORT  = "REDIS_PORT"
 )
 
 func GetEnv() *Env {
@@ -27,6 +37,21 @@ func GetEnv() *Env {
 	}
 	if val, ok := os.LookupEnv(APIKey); ok {
 		config.APIKey = val
+	}
+	if val, ok := os.LookupEnv(DSN); ok {
+		config.DSN = val
+	}
+	if val, ok := os.LookupEnv(REDIS_HOST1); ok {
+		config.REDIS_HOST1 = val
+	}
+	if val, ok := os.LookupEnv(REDIS_HOST2); ok {
+		config.REDIS_HOST2 = val
+	}
+	if val, ok := os.LookupEnv(REDIS_HOST3); ok {
+		config.REDIS_HOST3 = val
+	}
+	if val, ok := os.LookupEnv(REDIS_PORT); ok {
+		config.REDIS_PORT = val
 	}
 	return &config
 }

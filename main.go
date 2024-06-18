@@ -9,6 +9,7 @@ import (
 	"github.com/MarceloPetrucio/go-scalar-api-reference"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/laurel-public-schools/lps-api/db"
 	"github.com/laurel-public-schools/lps-api/env"
 	"github.com/laurel-public-schools/lps-api/routes"
 )
@@ -54,6 +55,7 @@ func main() {
 	})
 
 	r.Mount("/email", routes.EmailRequest{}.Routes())
+
 	http.ListenAndServe(":6969", r)
 }
 
