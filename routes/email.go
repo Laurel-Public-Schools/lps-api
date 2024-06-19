@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/laurel-public-schools/lps-api/env"
+	"github.com/laurel-public-schools/lps-api/middleware"
 )
 
 type EmailRequest struct {
@@ -22,8 +23,22 @@ type EmailRequest struct {
 
 type EmailRoute struct{}
 
-func (rs EmailRequest) Routes() chi.Router {
+// SendEmail godoc
+//
+//	@Summary		Send an email
+//	@Description	Send an email via post request
+//	@ID				send-email
+//	@Tags			email
+//	@Accept			json
+//	@Produce		json
+//	@Success		200
+//	@Failure		400
+//	@Failure		500
+//	@Router			/email [post]
+func (rs EmailRequest) Routes() http.Handler {
 	r := chi.NewRouter()
+	r.Use(middleware.AuthCtx)
+
 	r.Post("/", rs.SendEmail)
 	return r
 }

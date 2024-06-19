@@ -17,14 +17,143 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {}
+    "paths": {
+        "/email": {
+            "post": {
+                "description": "Send an email via post request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "email"
+                ],
+                "summary": "Send an email",
+                "operationId": "send-email",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/ic": {
+            "get": {
+                "description": "Get classes from Infinite Campus",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "infinite-campus"
+                ],
+                "summary": "Get Classes",
+                "operationId": "get-classes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/routes.ClassResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "routes.ClassInfo": {
+            "type": "object",
+            "properties": {
+                "classCode": {
+                    "type": "string"
+                },
+                "classType": {
+                    "type": "string"
+                },
+                "course": {
+                    "$ref": "#/definitions/routes.LinkObject"
+                },
+                "dateLastModified": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "periods": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "school": {
+                    "$ref": "#/definitions/routes.LinkObject"
+                },
+                "sourcedId": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "terms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/routes.LinkObject"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "routes.ClassResponse": {
+            "type": "object",
+            "properties": {
+                "classes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/routes.ClassInfo"
+                    }
+                }
+            }
+        },
+        "routes.LinkObject": {
+            "type": "object",
+            "properties": {
+                "href": {
+                    "type": "string"
+                },
+                "sourcedId": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:6969",
-	BasePath:         "/",
+	Host:             "api.laurel.k12.mt.us",
+	BasePath:         "",
 	Schemes:          []string{"http", "https"},
 	Title:            "LPS API",
 	Description:      "This is the API for the Laurel Public Schools",

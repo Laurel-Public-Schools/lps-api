@@ -1,42 +1,82 @@
 //go:generate swagger generate spec -o swagger.json
+
 package main
 
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/MarceloPetrucio/go-scalar-api-reference"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/laurel-public-schools/lps-api/db"
-	"github.com/laurel-public-schools/lps-api/env"
+	"github.com/laurel-public-schools/lps-api/docs"
 	"github.com/laurel-public-schools/lps-api/routes"
 )
 
-// @title LPS API
-// @version 1.0
-// @description This is the API for the Laurel Public Schools
+//	@title			LPS API
+//	@version		1.0
+//	@description	This is the API for the Laurel Public Schools
 
-// @host localhost:6969
-// @BasePath /
+//	@host	api.laurel.k12.mt.us
+//	@BasePath
 
-// @schemes http https
-// @produce application/json
-// @consumes application/json
+//	@schemes	http https
+//	@produce	application/json
+//	@consumes	application/json
 
-// @securityDefinitions.api_key ApiKey
-// @in header
-// @name x-api-key
+// @securityDefinitions.api_key	ApiKey
+// @in								header
+// @name							x-api-key
+// @Routes /email [post]
+// @Routes /ic [get]
+// @Routes /docs [get]
 func main() {
+	docs.SwaggerInfo.Title = "LPS API"
+	server := &http.Server{Addr: "0.0.0.0:6969", Handler: service()}
+
+	serverCtx, serverStopCtx := context.WithCancel(context.Background())
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	go func() {
+		<-sig
+		shutdownCtx, _ := context.WithTimeout(serverCtx, 30*time.Second)
+
+		go func() {
+			<-shutdownCtx.Done()
+			if shutdownCtx.Err() == context.DeadlineExceeded {
+				log.Fatal("graceful shutdown timed out...")
+			}
+		}()
+
+		err := server.Shutdown(shutdownCtx)
+		if err != nil {
+			log.Fatal(err)
+		}
+		serverStopCtx()
+	}()
+
+	err := server.ListenAndServe()
+	if err != nil && err != http.ErrServerClosed {
+		log.Fatal(err)
+	}
+
+	<-serverCtx.Done()
+}
+
+func service() http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RealIP)
-	r.Use(authCtx)
-
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("🏳️‍🌈🏳️‍🌈🏳️‍🌈"))
 	})
@@ -53,21 +93,8 @@ func main() {
 		}
 		fmt.Fprintln(w, htmlContent)
 	})
-
+	println("Server is running on port 6969")
 	r.Mount("/email", routes.EmailRequest{}.Routes())
-
-	http.ListenAndServe(":6969", r)
-}
-
-func authCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		e := env.GetConfig()
-		apiKey := r.Header.Get("x-api-key")
-		if apiKey != e.APIKey {
-			http.Error(w, "Invalid API Key", http.StatusUnauthorized)
-			return
-		}
-		ctx := context.WithValue(r.Context(), "authorized", true)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+	r.Mount("/ic", routes.ICRoute{}.Routes())
+	return r
 }

@@ -1,11 +1,94 @@
-basePath: /
-host: localhost:6969
+definitions:
+  routes.ClassInfo:
+    properties:
+      classCode:
+        type: string
+      classType:
+        type: string
+      course:
+        $ref: '#/definitions/routes.LinkObject'
+      dateLastModified:
+        type: string
+      location:
+        type: string
+      periods:
+        items:
+          type: string
+        type: array
+      school:
+        $ref: '#/definitions/routes.LinkObject'
+      sourcedId:
+        type: string
+      status:
+        type: string
+      terms:
+        items:
+          $ref: '#/definitions/routes.LinkObject'
+        type: array
+      title:
+        type: string
+    type: object
+  routes.ClassResponse:
+    properties:
+      classes:
+        items:
+          $ref: '#/definitions/routes.ClassInfo'
+        type: array
+    type: object
+  routes.LinkObject:
+    properties:
+      href:
+        type: string
+      sourcedId:
+        type: string
+      type:
+        type: string
+    type: object
+host: api.laurel.k12.mt.us
 info:
   contact: {}
   description: This is the API for the Laurel Public Schools
   title: LPS API
   version: "1.0"
-paths: {}
+paths:
+  /email:
+    post:
+      consumes:
+      - application/json
+      description: Send an email via post request
+      operationId: send-email
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Send an email
+      tags:
+      - email
+  /ic:
+    get:
+      consumes:
+      - application/json
+      description: Get classes from Infinite Campus
+      operationId: get-classes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/routes.ClassResponse'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get Classes
+      tags:
+      - infinite-campus
 produces:
 - application/json
 schemes:

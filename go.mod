@@ -5,10 +5,13 @@ go 1.22.3
 require (
 	github.com/MarceloPetrucio/go-scalar-api-reference v0.0.0-20240521013641-ce5d2efe0e06
 	github.com/go-chi/chi/v5 v5.0.13
+	github.com/joho/godotenv v1.5.1
+	github.com/redis/go-redis/v9 v9.5.3
 	github.com/swaggo/swag v1.16.3
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gen v0.3.26
 	gorm.io/gorm v1.25.10
+	gorm.io/plugin/dbresolver v1.5.0
 )
 
 require (
@@ -28,7 +31,6 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/redis/go-redis/v9 v9.5.3 // indirect
 	golang.org/x/crypto v0.24.0 // indirect
 	golang.org/x/mod v0.18.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
@@ -38,5 +40,4 @@ require (
 	gorm.io/datatypes v1.1.1-0.20230130040222-c43177d3cf8c // indirect
 	gorm.io/driver/mysql v1.4.4 // indirect
 	gorm.io/hints v1.1.0 // indirect
-	gorm.io/plugin/dbresolver v1.5.0 // indirect
 )
