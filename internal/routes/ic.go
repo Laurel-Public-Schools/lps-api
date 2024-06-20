@@ -7,28 +7,14 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/laurel-public-schools/lps-api/env"
-	"github.com/laurel-public-schools/lps-api/middleware"
-	"github.com/laurel-public-schools/lps-api/utils"
+	"github.com/laurel-public-schools/lps-api/internal/env"
+	"github.com/laurel-public-schools/lps-api/internal/utils"
 )
 
 type ICRoute struct{}
 
-// InfinteCampus godoc
-//
-//	@Summary		Get Classes
-//	@Description	Get classes from Infinite Campus
-//	@ID				get-classes
-//	@Tags			infinite-campus
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	ClassResponse
-//	@Failure		400
-//	@Failure		500
-//	@Router			/ic [get]
 func (rs ICRoute) Routes() http.Handler {
 	r := chi.NewRouter()
-	r.Use(middleware.AuthCtx)
 	r.Get("/", rs.getClasses)
 	return r
 }
@@ -59,7 +45,7 @@ type ClassResponse struct {
 
 // @Summary	Get Classes
 func (rs ICRoute) getClasses(w http.ResponseWriter, r *http.Request) {
-	envConfig := env.GetConfig()
+	envConfig := env.GetEnv()
 	if envConfig == nil {
 		http.Error(w, "Invalid environment configuration", http.StatusInternalServerError)
 		return

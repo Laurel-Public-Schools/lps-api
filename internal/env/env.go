@@ -40,7 +40,7 @@ func loadEnv() {
 
 // GetEnv function returns a pointer to the Env struct with the environment variables
 func GetEnv() *Env {
-	loadEnv()
+	go loadEnv()
 	var config Env
 	val := reflect.ValueOf(&config).Elem()
 	typeOfConfig := val.Type()
@@ -57,9 +57,4 @@ func GetEnv() *Env {
 		field.SetString(envVal)
 	}
 	return &config
-}
-
-// GetConfig function returns a pointer to the Env struct with the environment variables
-func GetConfig() *Env {
-	return GetEnv()
 }
