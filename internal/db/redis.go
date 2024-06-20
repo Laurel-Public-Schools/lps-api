@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/laurel-public-schools/lps-api/env"
+	"github.com/laurel-public-schools/lps-api/internal/env"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -15,9 +15,9 @@ type Client struct {
 
 func NewRedisClient(ctx context.Context) (Client, error) {
 	var (
-		redisHost1 = env.GetConfig().REDIS_HOST1 + ":" + env.GetConfig().REDIS_PORT
-		redisHost2 = env.GetConfig().REDIS_HOST2 + ":" + env.GetConfig().REDIS_PORT
-		redisHost3 = env.GetConfig().REDIS_HOST3 + ":" + env.GetConfig().REDIS_PORT
+		redisHost1 = env.GetEnv().REDIS_HOST1 + ":" + env.GetEnv().REDIS_PORT
+		redisHost2 = env.GetEnv().REDIS_HOST2 + ":" + env.GetEnv().REDIS_PORT
+		redisHost3 = env.GetEnv().REDIS_HOST3 + ":" + env.GetEnv().REDIS_PORT
 	)
 	rdb := redis.NewFailoverClusterClient(&redis.FailoverOptions{
 		MasterName:    "mymaster",

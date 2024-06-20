@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/laurel-public-schools/lps-api/db"
-	"github.com/laurel-public-schools/lps-api/env"
+	"github.com/laurel-public-schools/lps-api/internal/db"
+	"github.com/laurel-public-schools/lps-api/internal/env"
 
 	"time"
 )
@@ -51,8 +51,8 @@ func IcAuth() (string, error) {
 func newToken() (TokenResponse, error) {
 	form := url.Values{}
 	form.Add("grant_type", "client_credentials")
-	form.Add("client_id", env.GetConfig().ONEROSTER_CLIENT_ID)
-	form.Add("client_secret", env.GetConfig().ONEROSTER_CLIENT_SECRET)
+	form.Add("client_id", env.GetEnv().ONEROSTER_CLIENT_ID)
+	form.Add("client_secret", env.GetEnv().ONEROSTER_CLIENT_SECRET)
 
 	req, err := http.NewRequest("POST", "https://mtdecloud2.infinitecampus.org/campus/oauth2/token?appName=laurel", bytes.NewBufferString(form.Encode()))
 

@@ -1,10 +1,10 @@
-package middleware
+package middlewares
 
 import (
 	"context"
 	"net/http"
 
-	"github.com/laurel-public-schools/lps-api/env"
+	"github.com/laurel-public-schools/lps-api/internal/env"
 )
 
 type Auth struct {
@@ -13,7 +13,7 @@ type Auth struct {
 
 func AuthCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		e := env.GetConfig()
+		e := env.GetEnv()
 		apiKey := r.Header.Get("x-api-key")
 		if apiKey != e.APIKey {
 			http.Error(w, "Invalid API Key", http.StatusUnauthorized)

@@ -3,14 +3,15 @@ package utils
 
 import (
 	"context"
-	"github.com/laurel-public-schools/lps-api/env"
-	"github.com/laurel-public-schools/lps-api/middleware"
+
+	"github.com/laurel-public-schools/lps-api/internal/env"
+	"github.com/laurel-public-schools/lps-api/internal/middlewares"
 )
 
 type Utils struct{}
 
 func EnvFromContext(ctx context.Context) *env.Env {
-	if v := ctx.Value(middleware.EnvKey); v != nil {
+	if v := ctx.Value(middlewares.EnvKey); v != nil {
 		if envConfig, ok := v.(*env.Env); ok {
 			return envConfig
 		}

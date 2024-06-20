@@ -53,7 +53,7 @@ func (rs EmailRequest) SendEmail(w http.ResponseWriter, r *http.Request) {
 		recipients[i] = strings.TrimSpace(recipient)
 	}
 
-	errs := smtp.SendMail("smtp.gmail.com:587", auth, e.config.User, recipients, msg)
+	errs := smtp.SendMail("smtp.gmail.com:587", auth, config.User, recipients, msg)
 	if errs != nil {
 		http.Error(w, errs.Error(), http.StatusInternalServerError)
 		fmt.Println(errs)
